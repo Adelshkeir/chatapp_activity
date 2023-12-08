@@ -1,48 +1,40 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Chat from "./components/Chat/Chat.js";
 import Input from "./components/Input/Input.js";
+import io from "socket.io-client";
+
+const socket = io("https://chat-backend-vtz5.onrender.com/"); 
 
 function App() {
   const [username, setUsername] = useState("Current User");
-  const [messages, setMessages] = useState([
-    {
-      text: "Hello",
-      sender: "Current User", // or "received"
-    },
-    {
-      text: "Hellooo",
-      sender: "user X", // or "received"
-    },
-    {
-      text: "How are you today?",
-      sender: "Current User",
-    },
-    {
-      text: "I'm good, How about you?",
-      sender: "user Y", // or "received"
-    },
-    {
-      text: "I'm great!",
-      sender: "Current User",
-    },
-    {
-      text: "Are you ready to start the challenge!",
-      sender: "user X", // or "received"
-    },
-    {
-      text: "Absolutely!",
-      sender: "Current User",
-    },
-    {
-      text: "Great, let's start!",
-      sender: "user Y", // or "received"
-    },
-  ]);
+  const [messages, setMessages] = useState([]);
 
-  // Placeholder for sending message
+  useEffect(() => {
+    socket.on("chat message", (msg) => {
+      setMessages((prevMessages) => {
+        console.log("Appending message:", msg);
+        return [...prevMessages, msg];
+      });
+    });
+
+    socket.on("hello", () => {
+      console.log("Server says hello!");
+    });
+
+    return () => {
+      socket.off("chat message");
+      socket.off("hello");
+    };
+  }, []);
+
+  useEffect(() => {
+    // This effect will run whenever the messages state changes
+    // You can add any additional logic here
+    console.log("Messages updated:", messages);
+  }, [messages]);
+
   const sendMessage = (msg) => {
-    // Socket.IO integration will go here
-    console.log(msg); // For testing
+    socket.emit("chat message", { text: msg, sender: username });
   };
 
   return (

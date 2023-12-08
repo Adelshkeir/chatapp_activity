@@ -12,6 +12,10 @@ function Input({ sendMessage }) {
     }
   };
 
+const onsend=()=>{
+  console.log(message)
+}
+
   return (
     <form onSubmit={handleSubmit} className="input-form">
       <input
@@ -20,7 +24,7 @@ function Input({ sendMessage }) {
         onChange={(e) => setMessage(e.target.value)}
         className="input-field"
       />
-      <button type="submit" className="send-button">
+      <button type="submit" className="send-button" onClick={onsend}>
         Send
       </button>
     </form>
